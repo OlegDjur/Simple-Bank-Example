@@ -18,6 +18,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.Default()
 
 	router.POST("/accounts", h.CreateAccount)
+	router.POST("/user", h.createUser)
 
 	return router
 }
