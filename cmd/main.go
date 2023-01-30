@@ -6,7 +6,7 @@ import (
 	"sbank/internal/controller"
 	"sbank/internal/repository"
 	"sbank/internal/service"
-	"sbank/pkg/store/postgres"
+	"sbank/pkg/db/postgres"
 	"time"
 )
 
