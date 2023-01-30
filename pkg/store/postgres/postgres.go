@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 
+	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
 )
 
@@ -21,7 +22,7 @@ func InitDB() *sql.DB {
 
 	db, err := sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
-		log.Fatal("cannot load config:", err)
+		log.Fatal("cannot load config: ", err)
 	}
 
 	return db
