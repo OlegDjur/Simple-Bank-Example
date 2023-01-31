@@ -5,3 +5,7 @@ type CreateAccountDTO struct {
 	Balance  int64  `json:"balance"`
 	Currency string `json:"currency"`
 }
+
+type GetAccountDTO struct {
+	ID int64
+}

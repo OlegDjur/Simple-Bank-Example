@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"database/sql"
 	"net/http"
 	"sbank/internal/controller/dto"
 
@@ -25,6 +26,27 @@ func (h *Handler) CreateAccount(ctx *gin.Context) {
 			}
 		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, account)
+}
+
+func (h *Handler) GetAccount(ctx *gin.Context) {
+	var req dto.GetAccountDTO
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	account, err := h.service.GetAccount(ctx, req.ID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusNotFound, errorResponse(err))
 		return
 	}
 

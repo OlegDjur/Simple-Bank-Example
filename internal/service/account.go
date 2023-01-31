@@ -5,10 +5,13 @@ import (
 	"sbank/internal/controller/dto"
 	"sbank/internal/models"
 	"sbank/internal/repository"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Account interface {
 	CreateAccount(ctx context.Context, arg dto.CreateAccountDTO) (models.Account, error)
+	GetAccount(ctx *gin.Context, reqID int64) (models.Account, error)
 }
 
 type AccountService struct {
@@ -23,5 +26,10 @@ func (as *AccountService) CreateAccount(ctx context.Context, arg dto.CreateAccou
 	return as.repo.CreateAccount(ctx, arg)
 }
 
-func validateAccount(arg dto.CreateAccountDTO) {
+func (as *AccountService) GetAccount(ctx *gin.Context, reqID int64) (models.Account, error) {
+	return as.repo.GetAccount(ctx, reqID)
+}
+
+func validAccount(arg dto.CreateAccountDTO) {
+	// account, err :=
 }

@@ -3,13 +3,13 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"sbank/internal/controller/dto"
 	"sbank/internal/models"
 )
 
 type Account interface {
 	CreateAccount(ctx context.Context, arg dto.CreateAccountDTO) (models.Account, error)
+	GetAccount(ctx context.Context, reqID int64) (models.Account, error)
 }
 
 type AccountStorage struct {
@@ -23,13 +23,7 @@ func NewAccountStorage(db *sql.DB) *AccountStorage {
 func (as *AccountStorage) CreateAccount(ctx context.Context, arg dto.CreateAccountDTO) (models.Account, error) {
 	var i models.Account
 
-	query := `INSERT INTO accounts (
-	  owner,
-	  currency
-	) VALUES (
-	  $1, $2
-	) RETURNING id, owner, balance, currency, created_at
-	`
+	query := `INSERT INTO accounts (owner, currency) VALUES ($1, $2) RETURNING id, owner, balance, currency, created_at`
 
 	row := as.db.QueryRowContext(ctx, query, arg.Owner, arg.Currency)
 
@@ -40,6 +34,24 @@ func (as *AccountStorage) CreateAccount(ctx context.Context, arg dto.CreateAccou
 		&i.Currency,
 		&i.CreatedAt,
 	)
-	fmt.Println(err)
+
 	return i, err
+}
+
+func (as *AccountStorage) GetAccount(ctx context.Context, reqID int64) (models.Account, error) {
+	var account models.Account
+
+	query := `SELECT id, owner, balance, currency, created_at FROM accounts Where id = $1 LIMIT 1`
+
+	row := as.db.QueryRowContext(ctx, query, reqID)
+
+	err := row.Scan(
+		&account.ID,
+		&account.Owner,
+		&account.Balance,
+		&account.Currency,
+		&account.CreatedAt,
+	)
+
+	return account, err
 }
