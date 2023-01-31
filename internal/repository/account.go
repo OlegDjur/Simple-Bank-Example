@@ -23,9 +23,9 @@ func NewAccountStorage(db *sql.DB) *AccountStorage {
 func (as *AccountStorage) CreateAccount(ctx context.Context, arg dto.CreateAccountDTO) (models.Account, error) {
 	var i models.Account
 
-	query := `INSERT INTO accounts (owner, currency) VALUES ($1, $2) RETURNING id, owner, balance, currency, created_at`
+	query := `INSERT INTO accounts (owner, balance, currency) VALUES ($1, $2, $3) RETURNING id, owner, balance, currency, created_at`
 
-	row := as.db.QueryRowContext(ctx, query, arg.Owner, arg.Currency)
+	row := as.db.QueryRowContext(ctx, query, arg.Owner, arg.Balance, arg.Currency)
 
 	err := row.Scan(
 		&i.ID,
