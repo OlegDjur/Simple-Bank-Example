@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"sbank/internal/controller/dto"
+	"sbank/internal/utils"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -10,9 +11,9 @@ import (
 
 func TestCreateAccount(t *testing.T) {
 	arg := dto.CreateAccountDTO{
-		Owner:    "tom",
-		Balance:  100,
-		Currency: "USD",
+		Owner:    utils.RandomOwner(),
+		Balance:  utils.RandomMoney(),
+		Currency: utils.RandomCurrency(),
 	}
 
 	account, err := testRepository.CreateAccount(context.Background(), arg)

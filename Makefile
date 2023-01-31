@@ -19,6 +19,9 @@ migratedown:
 migratedown1:
 	migrate -path internal/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose down 1
 
+test:
+	go test -v -cover ./...
+
 server:
 	go run ./cmd/main.go
 
