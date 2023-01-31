@@ -7,5 +7,10 @@ type CreateAccountDTO struct {
 }
 
 type GetAccountDTO struct {
-	ID int64
+	ID int64 `json:"id"`
+}
+
+type UpdateAccountDTO struct {
+	ID      int64 `json:"id"`
+	Balance int64 `json:"balance"`
 }

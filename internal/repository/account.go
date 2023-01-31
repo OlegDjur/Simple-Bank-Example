@@ -55,3 +55,29 @@ func (as *AccountStorage) GetAccount(ctx context.Context, reqID int64) (models.A
 
 	return account, err
 }
+
+func (as *AccountStorage) UpdateAccount(ctx context.Context, arg dto.UpdateAccountDTO) (*models.Account, error) {
+	var account *models.Account
+
+	query := `UPDATE account SET balance = $2 WHERE id = $1 RETURNING id, owner, balance, currency, created_at`
+
+	row := as.db.QueryRowContext(ctx, query, arg.ID, arg.Balance)
+
+	err := row.Scan(
+		&account.ID,
+		&account.Owner,
+		&account.Balance,
+		&account.Currency,
+		&account.CreatedAt,
+	)
+
+	return account, err
+}
+
+func (as *AccountStorage) DeleteAccount(ctx context.Context, id int64) error {
+	query := `DELETE FROM accounts WHERE id = $1`
+
+	_, err := as.db.ExecContext(ctx, query, id)
+
+	return err
+}
