@@ -10,6 +10,8 @@ import (
 type Account interface {
 	CreateAccount(ctx context.Context, arg dto.CreateAccountDTO) (models.Account, error)
 	GetAccount(ctx context.Context, reqID int64) (models.Account, error)
+	UpdateAccount(ctx context.Context, arg dto.UpdateAccountDTO) (models.Account, error)
+	DeleteAccount(ctx context.Context, id int64) error
 }
 
 type AccountStorage struct {
@@ -56,10 +58,10 @@ func (as *AccountStorage) GetAccount(ctx context.Context, reqID int64) (models.A
 	return account, err
 }
 
-func (as *AccountStorage) UpdateAccount(ctx context.Context, arg dto.UpdateAccountDTO) (*models.Account, error) {
-	var account *models.Account
+func (as *AccountStorage) UpdateAccount(ctx context.Context, arg dto.UpdateAccountDTO) (models.Account, error) {
+	var account models.Account
 
-	query := `UPDATE account SET balance = $2 WHERE id = $1 RETURNING id, owner, balance, currency, created_at`
+	query := `UPDATE accounts SET balance = $2 WHERE id = $1 RETURNING id, owner, balance, currency, created_at`
 
 	row := as.db.QueryRowContext(ctx, query, arg.ID, arg.Balance)
 
