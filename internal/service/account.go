@@ -30,6 +30,12 @@ func (as *AccountService) GetAccount(ctx *gin.Context, reqID int64) (models.Acco
 	return as.repo.GetAccount(ctx, reqID)
 }
 
-func validAccount(arg dto.CreateAccountDTO) {
-	// account, err :=
+func (as *AccountService) validAccount(arg dto.CreateAccountDTO) bool {
+	// account, err := as.repo.GetAccount(arg.)
+
+	return true
+}
+
+func validateAccountCurrency(currency string) bool {
+	return true
 }
