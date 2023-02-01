@@ -33,3 +33,20 @@ func (es *EntryStorage) CreateEntry(ctx context.Context, arg dto.CreateEntryDTO)
 
 	return entry, err
 }
+
+func (es *EntryStorage) GetEntry(ctx context.Context, id int64) (models.Entry, error) {
+	var entry models.Entry
+
+	query := `SELECT id, account_id, amount, created_at FROM entries WHERE id = $1 LIMIT 1`
+
+	row := es.db.QueryRowContext(ctx, query, id)
+
+	err := row.Scan(
+		&entry.ID,
+		&entry.AccountID,
+		&entry.Amount,
+		&entry.CreatedAt,
+	)
+
+	return entry, err
+}
