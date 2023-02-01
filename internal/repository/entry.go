@@ -50,3 +50,37 @@ func (es *EntryStorage) GetEntry(ctx context.Context, id int64) (models.Entry, e
 
 	return entry, err
 }
+
+func (es *EntryStorage) ListEntries(ctx context.Context, arg dto.ListEntriesDTO) ([]models.Entry, error) {
+	var listEntries []models.Entry
+
+	query := `SELECT id, account_id, amount, created_at FROM entries WHERE account_id = $1 ORDER BY id LIMIT $2, OFFSET $3`
+
+	rows, err := es.db.QueryContext(ctx, query, arg.AccountID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var i models.Entry
+
+		if err := rows.Scan(
+			&i.ID,
+			&i.AccountID,
+			&i.Amount,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		listEntries = append(listEntries, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return listEntries, nil
+}
