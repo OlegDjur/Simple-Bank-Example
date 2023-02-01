@@ -7,13 +7,17 @@ import (
 	"sbank/internal/models"
 )
 
-type transfer interface {
+type Transfer interface {
 	CraeteTransfer(ctx context.Context, arg dto.TransferDTO) (models.Transfer, error)
 	GetTransfer(ctx context.Context, id int64) (models.Transfer, error)
 }
 
 type TransferStorage struct {
 	db *sql.DB
+}
+
+func NewTransferStorage(db *sql.DB) *TransferStorage {
+	return &TransferStorage{db: db}
 }
 
 func (ts *TransferStorage) CraeteTransfer(ctx context.Context, arg dto.TransferDTO) (models.Transfer, error) {
