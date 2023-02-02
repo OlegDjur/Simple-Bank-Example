@@ -27,8 +27,7 @@ func (ts *TransferStorage) CraeteTransfer(ctx context.Context, arg dto.CreateTra
 	query := `INSERT INTO transfers (
 		from_account_id, 
 		to_account_id, 
-		amount, 
-		created_at
+		amount 
 		) VALUES (
 		$1, $2, $3
 		) RETURNING id, from_account_id, to_account_id, amount, created_at
@@ -50,7 +49,7 @@ func (ts *TransferStorage) CraeteTransfer(ctx context.Context, arg dto.CreateTra
 func (ts *TransferStorage) GetTransfer(ctx context.Context, id int64) (models.Transfer, error) {
 	var transfer models.Transfer
 
-	query := `SELECT id, from_account_id, to_account_id, amount, created_at FROM transfers`
+	query := `SELECT id, from_account_id, to_account_id, amount, created_at FROM transfers WHERE id = $1 LIMIT 1`
 
 	row := ts.db.QueryRowContext(ctx, query, id)
 
