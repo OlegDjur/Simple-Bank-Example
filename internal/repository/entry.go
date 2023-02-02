@@ -7,7 +7,11 @@ import (
 	"sbank/internal/models"
 )
 
-type Entry interface{}
+type Entry interface {
+	CreateEntry(ctx context.Context, arg dto.CreateEntryDTO) (models.Entry, error)
+	GetEntry(ctx context.Context, id int64) (models.Entry, error)
+	ListEntries(ctx context.Context, arg dto.ListEntriesDTO) ([]models.Entry, error)
+}
 
 type EntryStorage struct {
 	db *sql.DB

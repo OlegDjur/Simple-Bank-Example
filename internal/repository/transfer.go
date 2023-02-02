@@ -8,8 +8,9 @@ import (
 )
 
 type Transfer interface {
-	CraeteTransfer(ctx context.Context, arg dto.TransferDTO) (models.Transfer, error)
+	CraeteTransfer(ctx context.Context, arg dto.CreateTransferDTO) (models.Transfer, error)
 	GetTransfer(ctx context.Context, id int64) (models.Transfer, error)
+	ListTransfers(ctx context.Context, arg dto.ListTransfersDTO) ([]models.Transfer, error)
 }
 
 type TransferStorage struct {
@@ -20,7 +21,7 @@ func NewTransferStorage(db *sql.DB) *TransferStorage {
 	return &TransferStorage{db: db}
 }
 
-func (ts *TransferStorage) CraeteTransfer(ctx context.Context, arg dto.TransferDTO) (models.Transfer, error) {
+func (ts *TransferStorage) CraeteTransfer(ctx context.Context, arg dto.CreateTransferDTO) (models.Transfer, error) {
 	var transfer models.Transfer
 
 	query := `INSERT INTO transfers (
