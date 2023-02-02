@@ -7,7 +7,9 @@ import (
 	"sbank/internal/models"
 )
 
-type TransferTx interface{}
+type TransferTx interface {
+	TtransferTx(ctx context.Context, arg dto.TransferTxDTO) (TransferTxResult, error)
+}
 
 type TransferTxStorage struct {
 	db *sql.DB

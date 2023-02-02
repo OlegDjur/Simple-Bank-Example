@@ -9,11 +9,15 @@ type Repository struct {
 	User
 	Transfer
 	Entry
+	TransferTx
 }
 
 func NewRepository(db *sql.DB) *Repository {
 	return &Repository{
-		Account: NewAccountStorage(db),
-		User:    NewUserStorage(db),
+		Account:    NewAccountStorage(db),
+		User:       NewUserStorage(db),
+		Transfer:   NewTransferStorage(db),
+		Entry:      NewEntryStorage(db),
+		TransferTx: NewTransferTxStorage(db),
 	}
 }
