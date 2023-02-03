@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"sbank/internal/controller/dto"
 	"sbank/internal/models"
 )
@@ -34,6 +35,8 @@ type TransferTxResult struct {
 	FromEntry   models.Entry    `json:"from_entry"`
 	ToEntry     models.Entry    `json:"to_entry"`
 }
+
+var txKey = struct{}{}
 
 func (txs *TransferTxStorage) TtransferTx(ctx context.Context, arg dto.TransferTxDTO) (TransferTxResult, error) {
 	var result TransferTxResult
@@ -74,29 +77,20 @@ func (txs *TransferTxStorage) TtransferTx(ctx context.Context, arg dto.TransferT
 	// TODO: update accounts balans
 
 	// переводим деньги с account1
-	account1, err := txs.Account.GetAccount(ctx, arg.FromAccountID)
-	if err != nil {
-		return TransferTxResult{}, err
-	}
-
-	result.FromAccount, err = txs.Account.UpdateAccount(ctx, dto.UpdateAccountDTO{
-		ID:      arg.FromAccountID,
-		Balance: account1.Balance - arg.Amount,
+	result.FromAccount, err = txs.Account.AddAccountBalance(ctx, dto.AddAccountBalanceDTO{
+		ID:     arg.FromAccountID,
+		Amount: -arg.Amount,
 	})
 	if err != nil {
 		return TransferTxResult{}, err
 	}
 
 	// переводим деньги на account2
-	account2, err := txs.Account.GetAccount(ctx, arg.ToAccountID)
-	if err != nil {
-		return TransferTxResult{}, err
-	}
-
-	result.ToAccount, err = txs.Account.UpdateAccount(ctx, dto.UpdateAccountDTO{
-		ID:      arg.ToAccountID,
-		Balance: account2.Balance + arg.Amount,
+	result.ToAccount, err = txs.Account.AddAccountBalance(ctx, dto.AddAccountBalanceDTO{
+		ID:     arg.ToAccountID,
+		Amount: arg.Amount,
 	})
+	fmt.Println()
 	if err != nil {
 		return TransferTxResult{}, err
 	}

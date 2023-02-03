@@ -14,3 +14,8 @@ type UpdateAccountDTO struct {
 	ID      int64 `json:"id"`
 	Balance int64 `json:"balance"`
 }
+
+type AddAccountBalanceDTO struct {
+	ID     int64 `json:"id"`
+	Amount int64 `json:"balance"`
+}

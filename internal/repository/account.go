@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"sbank/internal/controller/dto"
 	"sbank/internal/models"
 )
@@ -10,7 +11,9 @@ import (
 type Account interface {
 	CreateAccount(ctx context.Context, arg dto.CreateAccountDTO) (models.Account, error)
 	GetAccount(ctx context.Context, reqID int64) (models.Account, error)
+	GetAccountForUpdate(ctx context.Context, id int64) (models.Account, error)
 	UpdateAccount(ctx context.Context, arg dto.UpdateAccountDTO) (models.Account, error)
+	AddAccountBalance(ctx context.Context, arg dto.AddAccountBalanceDTO) (models.Account, error)
 	DeleteAccount(ctx context.Context, id int64) error
 }
 
@@ -36,7 +39,7 @@ func (as *AccountStorage) CreateAccount(ctx context.Context, arg dto.CreateAccou
 		&i.Currency,
 		&i.CreatedAt,
 	)
-
+	fmt.Println(i.Balance)
 	return i, err
 }
 
@@ -61,7 +64,7 @@ func (as *AccountStorage) GetAccount(ctx context.Context, reqID int64) (models.A
 func (as *AccountStorage) GetAccountForUpdate(ctx context.Context, id int64) (models.Account, error) {
 	var account models.Account
 
-	query := `SELECT id, owner, balance, currency, created_at FROM accounts Where id = $1 LIMIT 1 FOR UPDATE`
+	query := `SELECT id, owner, balance, currency, created_at FROM accounts Where id = $1 LIMIT 1 FOR NO KEY UPDATE`
 
 	row := as.db.QueryRowContext(ctx, query, id)
 
@@ -92,6 +95,23 @@ func (as *AccountStorage) UpdateAccount(ctx context.Context, arg dto.UpdateAccou
 	)
 
 	return account, err
+}
+
+func (as *AccountStorage) AddAccountBalance(ctx context.Context, arg dto.AddAccountBalanceDTO) (models.Account, error) {
+	var i models.Account
+
+	query := `UPDATE accounts SET balance = balance + $1 WHERE id = $2 RETURNING id, owner, balance, currency, created_at`
+
+	row := as.db.QueryRowContext(ctx, query, arg.Amount, arg.ID)
+
+	err := row.Scan(
+		&i.ID,
+		&i.Owner,
+		&i.Balance,
+		&i.Currency,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 func (as *AccountStorage) DeleteAccount(ctx context.Context, id int64) error {

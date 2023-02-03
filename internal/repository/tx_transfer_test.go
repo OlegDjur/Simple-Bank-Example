@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"log"
 	"sbank/internal/controller/dto"
 	"testing"
 
@@ -11,6 +12,7 @@ import (
 
 func TestTransferTx(t *testing.T) {
 	store := NewRepository(testDB)
+	log.Printf("testDB is %v", testDB)
 
 	account1 := createRandomAccount(t)
 	account2 := createRandomAccount(t)
