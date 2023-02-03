@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"sbank/internal/controller/dto"
 	"sbank/internal/models"
 )
@@ -76,23 +75,42 @@ func (txs *TransferTxStorage) TtransferTx(ctx context.Context, arg dto.TransferT
 
 	// TODO: update accounts balans
 
-	// переводим деньги с account1
-	result.FromAccount, err = txs.Account.AddAccountBalance(ctx, dto.AddAccountBalanceDTO{
-		ID:     arg.FromAccountID,
-		Amount: -arg.Amount,
-	})
-	if err != nil {
-		return TransferTxResult{}, err
-	}
+	if arg.FromAccountID < arg.ToAccountID {
+		result.FromAccount, err = txs.AddAccountBalance(ctx, dto.AddAccountBalanceDTO{
+			ID:     arg.FromAccountID,
+			Amount: -arg.Amount,
+		})
+		if err != nil {
+			tx.Rollback()
+			return TransferTxResult{}, err
+		}
 
-	// переводим деньги на account2
-	result.ToAccount, err = txs.Account.AddAccountBalance(ctx, dto.AddAccountBalanceDTO{
-		ID:     arg.ToAccountID,
-		Amount: arg.Amount,
-	})
-	fmt.Println()
-	if err != nil {
-		return TransferTxResult{}, err
+		result.ToAccount, err = txs.AddAccountBalance(ctx, dto.AddAccountBalanceDTO{
+			ID:     arg.ToAccountID,
+			Amount: arg.Amount,
+		})
+		if err != nil {
+			tx.Rollback()
+			return TransferTxResult{}, err
+		}
+	} else {
+		result.ToAccount, err = txs.AddAccountBalance(ctx, dto.AddAccountBalanceDTO{
+			ID:     arg.ToAccountID,
+			Amount: arg.Amount,
+		})
+		if err != nil {
+			tx.Rollback()
+			return TransferTxResult{}, err
+		}
+
+		result.FromAccount, err = txs.AddAccountBalance(ctx, dto.AddAccountBalanceDTO{
+			ID:     arg.FromAccountID,
+			Amount: -arg.Amount,
+		})
+		if err != nil {
+			tx.Rollback()
+			return TransferTxResult{}, err
+		}
 	}
 
 	tx.Commit()
