@@ -15,6 +15,7 @@ type TransferTxStorage struct {
 	db *sql.DB
 	Transfer
 	Entry
+	Account
 }
 
 func NewTransferTxStorage(db *sql.DB) *TransferTxStorage {
@@ -22,6 +23,7 @@ func NewTransferTxStorage(db *sql.DB) *TransferTxStorage {
 		db:       db,
 		Transfer: NewTransferStorage(db),
 		Entry:    NewEntryStorage(db),
+		Account:  NewAccountStorage(db),
 	}
 }
 
@@ -70,6 +72,34 @@ func (txs *TransferTxStorage) TtransferTx(ctx context.Context, arg dto.TransferT
 	}
 
 	// TODO: update accounts balans
+
+	// переводим деньги с account1
+	account1, err := txs.Account.GetAccount(ctx, arg.FromAccountID)
+	if err != nil {
+		return TransferTxResult{}, err
+	}
+
+	result.FromAccount, err = txs.Account.UpdateAccount(ctx, dto.UpdateAccountDTO{
+		ID:      arg.FromAccountID,
+		Balance: account1.Balance - arg.Amount,
+	})
+	if err != nil {
+		return TransferTxResult{}, err
+	}
+
+	// переводим деньги на account2
+	account2, err := txs.Account.GetAccount(ctx, arg.ToAccountID)
+	if err != nil {
+		return TransferTxResult{}, err
+	}
+
+	result.ToAccount, err = txs.Account.UpdateAccount(ctx, dto.UpdateAccountDTO{
+		ID:      arg.ToAccountID,
+		Balance: account2.Balance + arg.Amount,
+	})
+	if err != nil {
+		return TransferTxResult{}, err
+	}
 
 	tx.Commit()
 	return result, err

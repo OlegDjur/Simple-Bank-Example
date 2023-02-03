@@ -58,6 +58,24 @@ func (as *AccountStorage) GetAccount(ctx context.Context, reqID int64) (models.A
 	return account, err
 }
 
+func (as *AccountStorage) GetAccountForUpdate(ctx context.Context, id int64) (models.Account, error) {
+	var account models.Account
+
+	query := `SELECT id, owner, balance, currency, created_at FROM accounts Where id = $1 LIMIT 1 FOR UPDATE`
+
+	row := as.db.QueryRowContext(ctx, query, id)
+
+	err := row.Scan(
+		&account.ID,
+		&account.Owner,
+		&account.Balance,
+		&account.Currency,
+		&account.CreatedAt,
+	)
+
+	return account, err
+}
+
 func (as *AccountStorage) UpdateAccount(ctx context.Context, arg dto.UpdateAccountDTO) (models.Account, error) {
 	var account models.Account
 
