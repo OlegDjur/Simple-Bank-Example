@@ -5,12 +5,11 @@ import (
 	"database/sql"
 	"sbank/internal/controller/dto"
 	"sbank/internal/models"
-
-	"github.com/gin-gonic/gin"
 )
 
 type User interface {
-	CreateUser(ctx *gin.Context, arg dto.CreateUserDTO) (models.User, error)
+	CreateUser(ctx context.Context, arg dto.CreateUserDTO) (models.User, error)
+	GetUser(ctx context.Context, username string) (models.User, error)
 }
 
 type UserStorage struct {
@@ -21,7 +20,7 @@ func NewUserStorage(db *sql.DB) *UserStorage {
 	return &UserStorage{db: db}
 }
 
-func (us *UserStorage) CreateUser(ctx *gin.Context, arg dto.CreateUserDTO) (models.User, error) {
+func (us *UserStorage) CreateUser(ctx context.Context, arg dto.CreateUserDTO) (models.User, error) {
 	var user models.User
 
 	query := `INSERT INTO users (
@@ -51,12 +50,13 @@ func (us *UserStorage) CreateUser(ctx *gin.Context, arg dto.CreateUserDTO) (mode
 func (us *UserStorage) GetUser(ctx context.Context, username string) (models.User, error) {
 	var user models.User
 
-	query := `SELECT username, full_name, email, password_chenged_at, created_at FROM users WHERE username = $1 LIMIT 1`
+	query := `SELECT username, hashed_password, full_name, email, password_changed_at, created_at FROM users WHERE username = $1 LIMIT 1`
 
 	row := us.db.QueryRowContext(ctx, query, username)
 
 	err := row.Scan(
 		&user.Username,
+		&user.HashedPassword,
 		&user.FullName,
 		&user.Email,
 		&user.PasswordChangedAt,
