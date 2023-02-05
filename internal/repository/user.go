@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
 	"sbank/internal/controller/dto"
 	"sbank/internal/models"
@@ -38,6 +39,24 @@ func (us *UserStorage) CreateUser(ctx *gin.Context, arg dto.CreateUserDTO) (mode
 	err := row.Scan(
 		&user.Username,
 		&user.HashedPassword,
+		&user.FullName,
+		&user.Email,
+		&user.PasswordChangedAt,
+		&user.CreatedAt,
+	)
+
+	return user, err
+}
+
+func (us *UserStorage) GetUser(ctx context.Context, username string) (models.User, error) {
+	var user models.User
+
+	query := `SELECT username, full_name, email, password_chenged_at, created_at FROM users WHERE username = $1 LIMIT 1`
+
+	row := us.db.QueryRowContext(ctx, query, username)
+
+	err := row.Scan(
+		&user.Username,
 		&user.FullName,
 		&user.Email,
 		&user.PasswordChangedAt,
