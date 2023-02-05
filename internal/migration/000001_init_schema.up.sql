@@ -30,7 +30,7 @@ CREATE TABLE "users" (
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
--- ALTER TABLE "accounts" ADD FOREIGN KEY ("owner") REFERENCES "users" ("username");
+ALTER TABLE "accounts" ADD FOREIGN KEY ("owner") REFERENCES "users" ("username");
 
 -- ALTER TABLE "entries" ADD FOREIGN KEY ("account_id") REFERENCES "accounts" ("id");
 
