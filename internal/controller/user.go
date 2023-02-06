@@ -29,7 +29,7 @@ func newUserResponse(user models.User) userResponse {
 }
 
 func (h *Handler) createUser(ctx *gin.Context) {
-	var req dto.CreateUserDTO
+	var req dto.CreateUserRequestDTO
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))

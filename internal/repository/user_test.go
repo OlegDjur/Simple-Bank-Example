@@ -12,7 +12,7 @@ import (
 )
 
 func createRandomUser(t *testing.T) models.User {
-	arg := dto.CreateUserDTO{
+	arg := dto.CreateUserRequestDTO{
 		Username: utils.RandomOwner(),
 		Password: "qwerty",
 		FullName: utils.RandomOwner(),

@@ -8,7 +8,7 @@ import (
 )
 
 type User interface {
-	CreateUser(ctx context.Context, arg dto.CreateUserDTO) (models.User, error)
+	CreateUser(ctx context.Context, arg dto.CreateUserRequestDTO) (models.User, error)
 	GetUser(ctx context.Context, username string) (models.User, error)
 }
 
@@ -20,7 +20,7 @@ func NewUserStorage(db *sql.DB) *UserStorage {
 	return &UserStorage{db: db}
 }
 
-func (us *UserStorage) CreateUser(ctx context.Context, arg dto.CreateUserDTO) (models.User, error) {
+func (us *UserStorage) CreateUser(ctx context.Context, arg dto.CreateUserRequestDTO) (models.User, error) {
 	var user models.User
 
 	query := `INSERT INTO users (

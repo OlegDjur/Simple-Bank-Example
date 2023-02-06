@@ -9,7 +9,7 @@ import (
 )
 
 type User interface {
-	CreateUser(ctx *gin.Context, arg dto.CreateUserDTO) (models.User, error)
+	CreateUser(ctx *gin.Context, arg dto.CreateUserRequestDTO) (models.User, error)
 }
 
 type UserService struct {
@@ -20,6 +20,6 @@ func NewUserService(repo repository.User) *UserService {
 	return &UserService{repo: repo}
 }
 
-func (s *UserService) CreateUser(ctx *gin.Context, arg dto.CreateUserDTO) (models.User, error) {
+func (s *UserService) CreateUser(ctx *gin.Context, arg dto.CreateUserRequestDTO) (models.User, error) {
 	return s.repo.CreateUser(ctx, arg)
 }
