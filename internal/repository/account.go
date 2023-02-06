@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"sbank/internal/controller/dto"
 	"sbank/internal/models"
 )
@@ -39,7 +38,7 @@ func (as *AccountStorage) CreateAccount(ctx context.Context, arg dto.CreateAccou
 		&i.Currency,
 		&i.CreatedAt,
 	)
-	fmt.Println(i.Balance)
+
 	return i, err
 }
 

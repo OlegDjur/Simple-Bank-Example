@@ -81,7 +81,7 @@ func validateAccountCurrency(currency string) error {
 	}
 
 	currencyType := map[string]bool{
-		"usa": true,
+		"usd": true,
 		"eur": true,
 		"kzt": true,
 	}

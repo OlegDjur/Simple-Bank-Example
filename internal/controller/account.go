@@ -2,6 +2,7 @@ package controller
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"sbank/internal/controller/dto"
 
@@ -18,6 +19,7 @@ func (h *Handler) CreateAccount(ctx *gin.Context) {
 
 	account, err := h.service.CreateAccount(ctx, req)
 	if err != nil {
+		fmt.Println("error", err)
 		if pqErr, ok := err.(*pq.Error); ok {
 			switch pqErr.Code.Name() {
 			case "foreign_key_violation", "unique_violation":

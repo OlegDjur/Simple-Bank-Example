@@ -53,3 +53,7 @@ func (h *Handler) createUser(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, rsp)
 }
+
+// func (h *Handler) GetUser(ctx *gin.Context) {
+
+// }
