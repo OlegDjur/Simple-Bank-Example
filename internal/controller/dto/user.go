@@ -30,7 +30,7 @@ type LoginUserResponseDTO struct {
 	User        UserResponseDTO `json:"user"`
 }
 
-func newUserResponse(user models.User) *UserResponseDTO {
+func NewUserResponse(user models.User) *UserResponseDTO {
 	return &UserResponseDTO{
 		Username:          user.Username,
 		FullName:          user.FullName,

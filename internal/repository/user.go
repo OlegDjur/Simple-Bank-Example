@@ -47,8 +47,8 @@ func (us *UserStorage) CreateUser(ctx context.Context, arg dto.CreateUserRequest
 	return user, err
 }
 
-func (us *UserStorage) GetUser(ctx context.Context, username string) (models.User, error) {
-	var user models.User
+func (us *UserStorage) GetUser(ctx context.Context, username string) (dto.LoginUserResponseDTO, error) {
+	var user (dto.LoginUserResponseDTO, error)
 
 	query := `SELECT username, hashed_password, full_name, email, password_changed_at, created_at FROM users WHERE username = $1 LIMIT 1`
 
