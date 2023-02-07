@@ -22,7 +22,7 @@ type UserResponseDTO struct {
 
 type LoginUserRequestDTO struct {
 	Username string `json:"username" binding:"required,alphanum"`
-	Password string `json:"password" binding:"required,min=6"`
+	Password string `json:"password" binding:"required"`
 }
 
 type LoginUserResponseDTO struct {

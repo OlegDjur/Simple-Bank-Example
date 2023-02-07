@@ -43,7 +43,7 @@ func (h *Handler) loginUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, utils.ErrorResponse(err))
 	}
 
-	user, err := h.service.GenerateToken(ctx, req)
+	user, accessToken, err := h.service.GenerateToken(ctx, req, h.config.AccessTokenDuration)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, utils.ErrorResponse(err))
@@ -51,4 +51,10 @@ func (h *Handler) loginUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, utils.ErrorResponse(err))
 		return
 	}
+
+	rsp := dto.LoginUserResponseDTO{
+		AccessToken: accessToken,
+		User:        *dto.NewUserResponse(user),
+	}
+	ctx.JSON(http.StatusOK, rsp)
 }

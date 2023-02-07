@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -51,7 +52,7 @@ func NewJWTMaker(secretKey string) *JWTMaker {
 	// if len(secretKey) < minSecretKeySize {
 	// 	return nil, fmt.Errorf("invalid key size: must be at least %d characters", minSecretKeySize)
 	// }
-	return &JWTMaker{secretKey}
+	return &JWTMaker{secretKey: secretKey}
 }
 
 func (maker *JWTMaker) CreateToken(username string, duration time.Duration) (string, error) {
@@ -59,9 +60,15 @@ func (maker *JWTMaker) CreateToken(username string, duration time.Duration) (str
 	if err != nil {
 		return "", err
 	}
-
+	fmt.Println("error", err)
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
-	return jwtToken.SignedString([]byte(maker.secretKey))
+
+	res, err := jwtToken.SignedString([]byte(maker.secretKey))
+	if err != nil {
+		fmt.Println("error", err)
+	}
+
+	return res, err
 }
 
 func (maker *JWTMaker) VerifyToken(token string) (*Payload, error) {

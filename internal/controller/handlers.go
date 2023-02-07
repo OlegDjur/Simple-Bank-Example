@@ -22,8 +22,10 @@ func NewHandler(service *service.Service, config *config.Config) *Handler {
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.Default()
 
-	router.POST("/accounts", h.CreateAccount)
 	router.POST("/user", h.createUser)
+	router.POST("/user/login", h.loginUser)
+
+	router.POST("/accounts", h.CreateAccount)
 
 	return router
 }
