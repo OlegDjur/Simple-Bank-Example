@@ -47,6 +47,7 @@ func (h *Handler) loginUser(ctx *gin.Context) {
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, utils.ErrorResponse(err))
+			return
 		}
 		ctx.JSON(http.StatusInternalServerError, utils.ErrorResponse(err))
 		return
