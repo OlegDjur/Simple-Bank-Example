@@ -7,7 +7,7 @@ import (
 
 type CreateUserRequestDTO struct {
 	Username string `json:"username"`
-	Password string `json:"password"`
+	Password string `json:"password" binding:"required,min=6"`
 	FullName string `json:"full_name"`
 	Email    string `json:"email"`
 }

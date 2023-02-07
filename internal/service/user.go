@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"sbank/internal/controller/dto"
 	"sbank/internal/models"
 	"sbank/internal/repository"
@@ -30,6 +31,14 @@ func NewUserService(repo repository.User, secretKey string) *UserService {
 }
 
 func (s *UserService) CreateUser(ctx *gin.Context, arg dto.CreateUserRequestDTO) (models.User, error) {
+	var err error
+
+	arg.Password, err = HashPassword(arg.Password)
+	if err != nil {
+		// ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return models.User{}, err
+	}
+
 	return s.repo.CreateUser(ctx, arg)
 }
 
@@ -52,6 +61,15 @@ func (s *UserService) GenerateToken(ctx context.Context, req dto.LoginUserReques
 	}
 
 	return user, accessToken, nil
+}
+
+func HashPassword(password string) (string, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", fmt.Errorf("failed to hash password: %w", err)
+	}
+
+	return string(hashedPassword), nil
 }
 
 func CheckPassword(password string, hashedPassword string) error {
