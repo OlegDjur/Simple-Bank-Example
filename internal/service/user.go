@@ -16,6 +16,11 @@ const (
 	tokenTTl   = 12 * time.Hour
 )
 
+type tokenClaims struct {
+	jwt.StandardClaims
+	Username string `json:"username"`
+}
+
 type User interface {
 	CreateUser(ctx *gin.Context, arg dto.CreateUserRequestDTO) (models.User, error)
 	GetUser(ctx *gin.Context, req dto.LoginUserRequestDTO) (models.User, error)
@@ -61,10 +66,15 @@ func (s *UserService) GenerateToken(ctx context.Context, username, password stri
 	// 	return
 	// }
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
-		ExpiresAt: time.Now().Add(tokenTTl).Unix(),
-		IssuedAt:  time.Now().Unix(),
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &tokenClaims{
+		jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(tokenTTl).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
+		user.Username,
 	})
 
 	return token.SignedString([]byte(signingKey))
 }
+
+// func generatePassword
