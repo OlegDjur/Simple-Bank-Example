@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"sbank/config"
 	"sbank/internal/controller"
 	"sbank/internal/repository"
 	"sbank/internal/service"
@@ -15,11 +16,16 @@ type Server struct {
 }
 
 func main() {
-	db := postgres.InitDB()
+	config, err := config.LoadConfig(".")
+	if err != nil {
+		log.Fatal("cannot load")
+	}
+
+	db := postgres.InitDB(config)
 
 	repo := repository.NewRepository(db)
-	service := service.NewService(repo)
-	handler := controller.NewHandler(service)
+	service := service.NewService(repo, config.TokenSymmetricKey)
+	handler := controller.NewHandler(service, config)
 
 	router := handler.InitRoutes()
 

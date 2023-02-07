@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"sbank/config"
 	"sbank/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -8,10 +9,14 @@ import (
 
 type Handler struct {
 	service *service.Service
+	config  *config.Config
 }
 
-func NewHandler(service *service.Service) *Handler {
-	return &Handler{service: service}
+func NewHandler(service *service.Service, config *config.Config) *Handler {
+	return &Handler{
+		service: service,
+		config:  config,
+	}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
