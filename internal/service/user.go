@@ -6,6 +6,7 @@ import (
 	"sbank/internal/controller/dto"
 	"sbank/internal/models"
 	"sbank/internal/repository"
+	"sbank/internal/token"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -14,19 +15,17 @@ import (
 
 type User interface {
 	CreateUser(ctx *gin.Context, arg dto.CreateUserRequestDTO) (models.User, error)
-	GenerateToken(ctx context.Context, req dto.LoginUserRequestDTO, tokenDuration time.Duration) (models.User, string, error)
+	GenerateToken(ctx context.Context, req dto.LoginUserRequestDTO, tokenDuration time.Duration, tokenMaker token.Maker) (models.User, string, error)
 	// GetUser(ctx *gin.Context, req dto.LoginUserRequestDTO) (models.User, error)
 }
 
 type UserService struct {
-	repo  repository.User
-	maker Maker
+	repo repository.User
 }
 
 func NewUserService(repo repository.User, secretKey string) *UserService {
 	return &UserService{
-		repo:  repo,
-		maker: NewJWTMaker(secretKey),
+		repo: repo,
 	}
 }
 
@@ -42,7 +41,7 @@ func (s *UserService) CreateUser(ctx *gin.Context, arg dto.CreateUserRequestDTO)
 	return s.repo.CreateUser(ctx, arg)
 }
 
-func (s *UserService) GenerateToken(ctx context.Context, req dto.LoginUserRequestDTO, tokenDuration time.Duration) (models.User, string, error) {
+func (s *UserService) GenerateToken(ctx context.Context, req dto.LoginUserRequestDTO, tokenDuration time.Duration, tokenMaker token.Maker) (models.User, string, error) {
 	user, err := s.repo.GetUser(ctx, req.Username)
 	if err != nil {
 		return models.User{}, "", err
@@ -54,7 +53,7 @@ func (s *UserService) GenerateToken(ctx context.Context, req dto.LoginUserReques
 		return models.User{}, "", err
 	}
 
-	accessToken, err := s.maker.CreateToken(user.Username, tokenDuration)
+	accessToken, err := tokenMaker.CreateToken(user.Username, tokenDuration)
 	if err != nil {
 		// ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return models.User{}, "", err

@@ -5,6 +5,7 @@ import (
 	"sbank/config"
 	"sbank/internal/repository"
 	"sbank/internal/service"
+	"sbank/internal/token"
 	"sbank/internal/utils"
 	"testing"
 	"time"
@@ -12,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func newTestServer(t *testing.T) (*Handler, *service.JWTMaker) {
+func newTestServer(t *testing.T) (*Handler, *token.JWTMaker) {
 	config := &config.Config{
 		TokenSymmetricKey:   utils.RandomString(32),
 		AccessTokenDuration: time.Minute,
@@ -20,7 +21,7 @@ func newTestServer(t *testing.T) (*Handler, *service.JWTMaker) {
 
 	repo := repository.NewRepository(nil)
 	services := service.NewService(repo, config.TokenSymmetricKey)
-	tokenMaker := service.NewJWTMaker(config.TokenSymmetricKey)
+	tokenMaker := token.NewJWTMaker(config.TokenSymmetricKey)
 	handler := NewHandler(services, config)
 
 	return handler, tokenMaker

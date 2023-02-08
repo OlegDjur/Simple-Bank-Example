@@ -43,7 +43,7 @@ func (h *Handler) loginUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, utils.ErrorResponse(err))
 	}
 
-	user, accessToken, err := h.service.GenerateToken(ctx, req, h.config.AccessTokenDuration)
+	user, accessToken, err := h.service.GenerateToken(ctx, req, h.config.AccessTokenDuration, h.tokenMaker)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, utils.ErrorResponse(err))
