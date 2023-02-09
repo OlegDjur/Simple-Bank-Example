@@ -6,7 +6,8 @@ type CreateTransferDTO struct {
 	FromAccountID int64  `json:"from_account_id"`
 	ToAccountID   int64  `json:"to_account_id"`
 	Amount        int64  `json:"amount"`
-	Currency      string `json:"currency" binding:"required,oneof=USD EUR CAD"`
+	Currency      string `json:"currency"`
+	AuthUsername  string
 }
 
 type TransferTxParamsDTO struct {

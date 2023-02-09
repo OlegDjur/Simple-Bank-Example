@@ -10,7 +10,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var ErrCurrency = errors.New("account currency mismatch")
+var (
+	ErrCurrency = errors.New("account currency mismatch")
+	ErrAuthUser = errors.New("from account doesn't belog to the authenticated user")
+)
 
 type Transfer interface {
 	CreateTransfer(ctx *gin.Context, arg dto.CreateTransferDTO) (dto.TransferTxResult, error)
@@ -25,9 +28,13 @@ func NewTransferService(repo *repository.Repository) *TransferService {
 }
 
 func (ts *TransferService) CreateTransfer(ctx *gin.Context, arg dto.CreateTransferDTO) (dto.TransferTxResult, error) {
-	_, err := ts.validAccount(ctx, arg.FromAccountID, arg.Currency)
+	fromAccount, err := ts.validAccount(ctx, arg.FromAccountID, arg.Currency)
 	if err != nil {
 		return dto.TransferTxResult{}, err
+	}
+
+	if fromAccount.Owner != arg.AuthUsername {
+		return dto.TransferTxResult{}, ErrAuthUser
 	}
 
 	_, err = ts.validAccount(ctx, arg.ToAccountID, arg.Currency)

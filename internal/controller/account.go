@@ -25,7 +25,7 @@ func (h *Handler) CreateAccount(ctx *gin.Context) {
 	arg := dto.CreateAccountParamsDTO{
 		Owner:    authPayload.Username,
 		Currency: req.Currency,
-		Balance:  0,
+		Balance:  1000,
 	}
 
 	account, err := h.service.CreateAccount(ctx, arg)

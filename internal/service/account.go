@@ -46,9 +46,9 @@ func validCreateAccount(arg dto.CreateAccountParamsDTO) error {
 		return ErrInvalidOwner
 	}
 
-	if arg.Balance > 0 {
-		return ErrInvalidBalance
-	}
+	// if arg.Balance > 0 {
+	// 	return ErrInvalidBalance
+	// }
 
 	if err := validateAccountCurrency(arg.Currency); err != nil {
 		return ErrInvalidcurrencyType
