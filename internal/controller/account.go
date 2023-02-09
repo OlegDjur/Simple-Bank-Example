@@ -5,20 +5,29 @@ import (
 	"fmt"
 	"net/http"
 	"sbank/internal/controller/dto"
+	"sbank/internal/token"
 	"sbank/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
 )
 
-func (h *Handler) CreateAccount(ctx *gin.Context) {
-	var req dto.CreateAccountDTO
+func (h *Handler) createAccount(ctx *gin.Context) {
+	var req dto.CreateAccountRequestDTO
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, utils.ErrorResponse(err))
 	}
 
-	account, err := h.service.CreateAccount(ctx, req)
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
+	arg := dto.CreateAccountParamsDTO{
+		Owner:    authPayload.Username,
+		Currency: req.Currency,
+		Balance:  0,
+	}
+
+	account, err := h.service.CreateAccount(ctx, arg)
 	if err != nil {
 		fmt.Println("error", err)
 		if pqErr, ok := err.(*pq.Error); ok {

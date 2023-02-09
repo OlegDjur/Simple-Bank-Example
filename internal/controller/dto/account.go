@@ -1,6 +1,10 @@
 package dto
 
-type CreateAccountDTO struct {
+type CreateAccountRequestDTO struct {
+	Currency string `json:"currency"`
+}
+
+type CreateAccountParamsDTO struct {
 	Owner    string `json:"owner"`
 	Balance  int64  `json:"balance"`
 	Currency string `json:"currency"`
