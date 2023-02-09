@@ -1,8 +1,11 @@
 package controller
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 	"sbank/internal/controller/dto"
+	"sbank/internal/service"
 	"sbank/internal/utils"
 
 	"github.com/gin-gonic/gin"
@@ -25,6 +28,13 @@ func (h *Handler) createTransfer(ctx *gin.Context) {
 
 	result, err := h.service.CreateTransfer(ctx, arg)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, utils.ErrorResponse(err))
+			return
+		}
+		if errors.Is(err, service.ErrCurrency) {
+			ctx.JSON(http.StatusBadRequest, utils.ErrorResponse(err))
+		}
 		ctx.JSON(http.StatusInternalServerError, utils.ErrorResponse(err))
 		return
 	}

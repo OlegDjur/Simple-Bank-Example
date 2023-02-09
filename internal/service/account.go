@@ -92,3 +92,11 @@ func validateAccountCurrency(currency string) error {
 
 	return nil
 }
+
+// func IsSupportedCurrency(currency string) bool {
+// 	switch currency {
+// 	case USD, EUR, CAD:
+// 		return true
+// 	}
+// 	return false
+// }

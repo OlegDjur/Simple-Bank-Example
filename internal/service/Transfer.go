@@ -2,11 +2,15 @@ package service
 
 import (
 	"database/sql"
+	"errors"
 	"sbank/internal/controller/dto"
+	"sbank/internal/models"
 	"sbank/internal/repository"
 
 	"github.com/gin-gonic/gin"
 )
+
+var ErrCurrency = errors.New("account currency mismatch")
 
 type Transfer interface {
 	CreateTransfer(ctx *gin.Context, arg dto.CreateTransferDTO) (dto.TransferTxResult, error)
@@ -21,35 +25,34 @@ func NewTransferService(repo *repository.Repository) *TransferService {
 }
 
 func (ts *TransferService) CreateTransfer(ctx *gin.Context, arg dto.CreateTransferDTO) (dto.TransferTxResult, error) {
-	valid1 := ts.validAccount(ctx, arg.ToAccountID, arg.Currency)
-	if !valid1 {
-		// return
+	_, err := ts.validAccount(ctx, arg.FromAccountID, arg.Currency)
+	if err != nil {
+		return dto.TransferTxResult{}, err
 	}
 
-	valid2 := ts.validAccount(ctx, arg.ToAccountID, arg.Currency)
-	if !valid2 {
-		// return
+	_, err = ts.validAccount(ctx, arg.ToAccountID, arg.Currency)
+	if err != nil {
+		return dto.TransferTxResult{}, err
 	}
 
 	return ts.repo.CreateTransferTx(ctx, arg)
 }
 
-func (ts *TransferService) validAccount(ctx *gin.Context, accountID int64, currency string) bool {
+func (ts *TransferService) validAccount(ctx *gin.Context, accountID int64, currency string) (models.Account, error) {
 	account, err := ts.repo.GetAccount(ctx, accountID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			// ctx.JSON(http.StatusNotFound, utils.ErrorResponse(err))
-			return false
+			return account, err
 		}
-		// ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return false
+
+		return account, err
 	}
 
 	if account.Currency != currency {
 		// err := fmt.Errorf("account [%d] currency mismatch: %s vs %s", account.ID, account.Currency, currency)
-		// ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return false
+
+		return account, ErrCurrency
 	}
 
-	return true
+	return account, nil
 }
