@@ -8,7 +8,7 @@ import (
 )
 
 type Account interface {
-	CreateAccount(ctx context.Context, arg dto.CreateAccountDTO) (models.Account, error)
+	CreateAccount(ctx context.Context, arg dto.CreateAccountParamsDTO) (models.Account, error)
 	GetAccount(ctx context.Context, reqID int64) (models.Account, error)
 	GetAccountForUpdate(ctx context.Context, id int64) (models.Account, error)
 	UpdateAccount(ctx context.Context, arg dto.UpdateAccountDTO) (models.Account, error)
@@ -24,7 +24,7 @@ func NewAccountStorage(db *sql.DB) *AccountStorage {
 	return &AccountStorage{db: db}
 }
 
-func (as *AccountStorage) CreateAccount(ctx context.Context, arg dto.CreateAccountDTO) (models.Account, error) {
+func (as *AccountStorage) CreateAccount(ctx context.Context, arg dto.CreateAccountParamsDTO) (models.Account, error) {
 	var i models.Account
 
 	query := `INSERT INTO accounts (owner, balance, currency) VALUES ($1, $2, $3) RETURNING id, owner, balance, currency, created_at`

@@ -4,11 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"sbank/internal/controller/dto"
-	"sbank/internal/models"
 )
 
 type TransferTx interface {
-	TtransferTx(ctx context.Context, arg dto.TransferTxDTO) (TransferTxResult, error)
+	CreateTransferTx(ctx context.Context, arg dto.CreateTransferDTO) (dto.TransferTxResult, error)
 }
 
 type TransferTxStorage struct {
@@ -27,18 +26,10 @@ func NewTransferTxStorage(db *sql.DB) *TransferTxStorage {
 	}
 }
 
-type TransferTxResult struct {
-	Transfer    models.Transfer `json:"transfer"`
-	FromAccount models.Account  `json:"from_account"`
-	ToAccount   models.Account  `json:"to_account"`
-	FromEntry   models.Entry    `json:"from_entry"`
-	ToEntry     models.Entry    `json:"to_entry"`
-}
-
 var txKey = struct{}{}
 
-func (txs *TransferTxStorage) TtransferTx(ctx context.Context, arg dto.TransferTxDTO) (TransferTxResult, error) {
-	var result TransferTxResult
+func (txs *TransferTxStorage) CreateTransferTx(ctx context.Context, arg dto.CreateTransferDTO) (dto.TransferTxResult, error) {
+	var result dto.TransferTxResult
 
 	tx, err := txs.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -52,7 +43,7 @@ func (txs *TransferTxStorage) TtransferTx(ctx context.Context, arg dto.TransferT
 	})
 	if err != nil {
 		tx.Rollback()
-		return TransferTxResult{}, err
+		return dto.TransferTxResult{}, err
 	}
 
 	result.FromEntry, err = txs.Entry.CreateEntry(ctx, dto.CreateEntryDTO{
@@ -61,7 +52,7 @@ func (txs *TransferTxStorage) TtransferTx(ctx context.Context, arg dto.TransferT
 	})
 	if err != nil {
 		tx.Rollback()
-		return TransferTxResult{}, err
+		return dto.TransferTxResult{}, err
 	}
 
 	result.ToEntry, err = txs.Entry.CreateEntry(ctx, dto.CreateEntryDTO{
@@ -70,7 +61,7 @@ func (txs *TransferTxStorage) TtransferTx(ctx context.Context, arg dto.TransferT
 	})
 	if err != nil {
 		tx.Rollback()
-		return TransferTxResult{}, err
+		return dto.TransferTxResult{}, err
 	}
 
 	// TODO: update accounts balans
@@ -82,7 +73,7 @@ func (txs *TransferTxStorage) TtransferTx(ctx context.Context, arg dto.TransferT
 		})
 		if err != nil {
 			tx.Rollback()
-			return TransferTxResult{}, err
+			return dto.TransferTxResult{}, err
 		}
 
 		result.ToAccount, err = txs.AddAccountBalance(ctx, dto.AddAccountBalanceDTO{
@@ -91,7 +82,7 @@ func (txs *TransferTxStorage) TtransferTx(ctx context.Context, arg dto.TransferT
 		})
 		if err != nil {
 			tx.Rollback()
-			return TransferTxResult{}, err
+			return dto.TransferTxResult{}, err
 		}
 	} else {
 		result.ToAccount, err = txs.AddAccountBalance(ctx, dto.AddAccountBalanceDTO{
@@ -100,7 +91,7 @@ func (txs *TransferTxStorage) TtransferTx(ctx context.Context, arg dto.TransferT
 		})
 		if err != nil {
 			tx.Rollback()
-			return TransferTxResult{}, err
+			return dto.TransferTxResult{}, err
 		}
 
 		result.FromAccount, err = txs.AddAccountBalance(ctx, dto.AddAccountBalanceDTO{
@@ -109,7 +100,7 @@ func (txs *TransferTxStorage) TtransferTx(ctx context.Context, arg dto.TransferT
 		})
 		if err != nil {
 			tx.Rollback()
-			return TransferTxResult{}, err
+			return dto.TransferTxResult{}, err
 		}
 	}
 

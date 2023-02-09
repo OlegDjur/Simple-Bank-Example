@@ -19,7 +19,7 @@ func TestCreateAccount(t *testing.T) {
 func createRandomAccount(t *testing.T) models.Account {
 	user := createRandomUser(t)
 
-	arg := dto.CreateAccountDTO{
+	arg := dto.CreateAccountParamsDTO{
 		Owner:    user.Username,
 		Balance:  utils.RandomMoney(),
 		Currency: utils.RandomCurrency(),

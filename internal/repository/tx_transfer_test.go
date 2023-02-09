@@ -22,13 +22,13 @@ func TestTransferTx(t *testing.T) {
 	amount := int64(10)
 
 	errs := make(chan error)
-	results := make(chan TransferTxResult)
+	results := make(chan dto.TransferTxResult)
 
 	existed := make(map[int]bool)
 
 	for i := 0; i < n; i++ {
 		go func() {
-			result, err := testRepository.TtransferTx(context.Background(), dto.TransferTxDTO{
+			result, err := testRepository.CreateTransferTx(context.Background(), dto.CreateTransferDTO{
 				FromAccountID: account1.ID,
 				ToAccountID:   account2.ID,
 				Amount:        amount,
@@ -137,7 +137,7 @@ func TestTransferTxDeadLock(t *testing.T) {
 		}
 
 		go func() {
-			_, err := store.TtransferTx(context.Background(), dto.TransferTxDTO{
+			_, err := store.CreateTransferTx(context.Background(), dto.CreateTransferDTO{
 				FromAccountID: fromAccountID,
 				ToAccountID:   toAccountID,
 				Amount:        amount,

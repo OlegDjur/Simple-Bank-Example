@@ -17,7 +17,7 @@ var (
 )
 
 type Account interface {
-	CreateAccount(ctx context.Context, arg dto.CreateAccountDTO) (models.Account, error)
+	CreateAccount(ctx context.Context, arg dto.CreateAccountParamsDTO) (models.Account, error)
 	GetAccount(ctx *gin.Context, reqID int64) (models.Account, error)
 }
 
@@ -29,8 +29,8 @@ func NewAccountService(repo repository.Account) *AccountService {
 	return &AccountService{repo: repo}
 }
 
-func (as *AccountService) CreateAccount(ctx context.Context, arg dto.CreateAccountDTO) (models.Account, error) {
-	if err := validAccount(arg); err != nil {
+func (as *AccountService) CreateAccount(ctx context.Context, arg dto.CreateAccountParamsDTO) (models.Account, error) {
+	if err := validCreateAccount(arg); err != nil {
 		return models.Account{}, err
 	}
 
@@ -41,7 +41,7 @@ func (as *AccountService) GetAccount(ctx *gin.Context, reqID int64) (models.Acco
 	return as.repo.GetAccount(ctx, reqID)
 }
 
-func validAccount(arg dto.CreateAccountDTO) error {
+func validCreateAccount(arg dto.CreateAccountParamsDTO) error {
 	if err := validateAccountOwner(arg.Owner); err != nil {
 		return ErrInvalidOwner
 	}

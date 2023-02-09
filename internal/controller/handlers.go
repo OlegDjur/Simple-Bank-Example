@@ -29,9 +29,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	router.POST("/user", h.createUser)
 	router.POST("/user/login", h.loginUser)
+	router.POST("/transfers", h.createTransfer)
+	router.POST("/accounts", h.CreateAccount)
 
-	authRoutes := router.Group("/").Use(authMiddleware(h.tokenMaker))
-	authRoutes.POST("/accounts", h.CreateAccount)
+	// authRoutes := router.Group("/").Use(authMiddleware(h.tokenMaker))
+	// authRoutes.POST("/accounts", h.CreateAccount)
 
 	return router
 }

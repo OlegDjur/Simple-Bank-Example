@@ -2,6 +2,7 @@ package controller
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"sbank/internal/controller/dto"
@@ -12,7 +13,7 @@ import (
 	"github.com/lib/pq"
 )
 
-func (h *Handler) createAccount(ctx *gin.Context) {
+func (h *Handler) CreateAccount(ctx *gin.Context) {
 	var req dto.CreateAccountRequestDTO
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -59,6 +60,13 @@ func (h *Handler) GetAccount(ctx *gin.Context) {
 			return
 		}
 		ctx.JSON(http.StatusNotFound, utils.ErrorResponse(err))
+		return
+	}
+
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	if account.Owner != authPayload.Username {
+		err := errors.New("account doesn't belong to authenticated user")
+		ctx.JSON(http.StatusUnauthorized, utils.ErrorResponse(err))
 		return
 	}
 
