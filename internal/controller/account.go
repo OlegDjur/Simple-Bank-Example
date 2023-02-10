@@ -72,3 +72,7 @@ func (h *Handler) GetAccount(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, account)
 }
+
+func (h *Handler) GetListAccounts(ctx *gin.Context) {
+
+}
