@@ -74,5 +74,5 @@ func (h *Handler) GetAccount(ctx *gin.Context) {
 }
 
 func (h *Handler) GetListAccounts(ctx *gin.Context) {
-
+	
 }
