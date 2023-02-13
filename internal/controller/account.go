@@ -25,7 +25,7 @@ func (h *Handler) CreateAccount(ctx *gin.Context) {
 	arg := dto.CreateAccountParamsDTO{
 		Owner:    authPayload.Username,
 		Currency: req.Currency,
-		// Balance:  1000,
+		Balance:  1000,
 	}
 
 	account, err := h.service.CreateAccount(ctx, arg)
@@ -48,7 +48,7 @@ func (h *Handler) CreateAccount(ctx *gin.Context) {
 func (h *Handler) GetAccount(ctx *gin.Context) {
 	var req dto.GetAccountDTO
 
-	if err := ctx.ShouldBindJSON(&req); err != nil {
+	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, utils.ErrorResponse(err))
 		return
 	}

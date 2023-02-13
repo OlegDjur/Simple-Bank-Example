@@ -3,6 +3,7 @@ package controller
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"net/http"
 	"sbank/internal/controller/dto"
 	"sbank/internal/service"
@@ -14,7 +15,7 @@ import (
 
 func (h *Handler) createTransfer(ctx *gin.Context) {
 	var req dto.CreateTransferDTO
-
+	fmt.Println(req)
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, utils.ErrorResponse(err))
 		return
@@ -40,6 +41,7 @@ func (h *Handler) createTransfer(ctx *gin.Context) {
 
 		if errors.Is(err, service.ErrCurrency) {
 			ctx.JSON(http.StatusBadRequest, utils.ErrorResponse(err))
+			return
 		}
 
 		if errors.Is(err, service.ErrAuthUser) {

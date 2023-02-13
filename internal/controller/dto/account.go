@@ -11,7 +11,7 @@ type CreateAccountParamsDTO struct {
 }
 
 type GetAccountDTO struct {
-	ID int64 `json:"id"`
+	ID int64 `uri:"id"`
 }
 
 type ListAccountsDTO struct {
