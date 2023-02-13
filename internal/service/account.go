@@ -19,6 +19,7 @@ var (
 type Account interface {
 	CreateAccount(ctx context.Context, arg dto.CreateAccountParamsDTO) (models.Account, error)
 	GetAccount(ctx *gin.Context, reqID int64) (models.Account, error)
+	GetListAccounts(ctx context.Context, arg dto.ListAccountsDTO) ([]models.Account, error)
 }
 
 type AccountService struct {
@@ -39,6 +40,15 @@ func (as *AccountService) CreateAccount(ctx context.Context, arg dto.CreateAccou
 
 func (as *AccountService) GetAccount(ctx *gin.Context, reqID int64) (models.Account, error) {
 	return as.repo.GetAccount(ctx, reqID)
+}
+
+func (as *AccountService) GetListAccounts(ctx context.Context, arg dto.ListAccountsDTO) ([]models.Account, error) {
+	accounts, err := as.repo.GetListAccounts(ctx, arg)
+	if err != nil {
+		return nil, err
+	}
+
+	return accounts, nil
 }
 
 func validCreateAccount(arg dto.CreateAccountParamsDTO) error {

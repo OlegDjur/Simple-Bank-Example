@@ -10,6 +10,7 @@ import (
 type Account interface {
 	CreateAccount(ctx context.Context, arg dto.CreateAccountParamsDTO) (models.Account, error)
 	GetAccount(ctx context.Context, reqID int64) (models.Account, error)
+	GetListAccounts(ctx context.Context, arg dto.ListAccountsDTO) ([]models.Account, error)
 	GetAccountForUpdate(ctx context.Context, id int64) (models.Account, error)
 	UpdateAccount(ctx context.Context, arg dto.UpdateAccountDTO) (models.Account, error)
 	AddAccountBalance(ctx context.Context, arg dto.AddAccountBalanceDTO) (models.Account, error)
@@ -58,6 +59,42 @@ func (as *AccountStorage) GetAccount(ctx context.Context, reqID int64) (models.A
 	)
 
 	return account, err
+}
+
+func (as *AccountStorage) GetListAccounts(ctx context.Context, arg dto.ListAccountsDTO) ([]models.Account, error) {
+	var listAccounts []models.Account
+
+	query := `SELECT id, owner, balance, currency, created_at FROM accounts WHERE owner = $1`
+
+	rows, err := as.db.QueryContext(ctx, query, arg.Owner)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var i models.Account
+
+		if err := rows.Scan(
+			&i.ID,
+			&i.Owner,
+			&i.Balance,
+			&i.Currency,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		listAccounts = append(listAccounts, i)
+	}
+
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return listAccounts, nil
 }
 
 func (as *AccountStorage) GetAccountForUpdate(ctx context.Context, id int64) (models.Account, error) {

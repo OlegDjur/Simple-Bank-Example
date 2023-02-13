@@ -25,7 +25,7 @@ func (h *Handler) CreateAccount(ctx *gin.Context) {
 	arg := dto.CreateAccountParamsDTO{
 		Owner:    authPayload.Username,
 		Currency: req.Currency,
-		Balance:  1000,
+		// Balance:  1000,
 	}
 
 	account, err := h.service.CreateAccount(ctx, arg)
@@ -38,7 +38,7 @@ func (h *Handler) CreateAccount(ctx *gin.Context) {
 				return
 			}
 		}
-		ctx.JSON(http.StatusInternalServerError, utils.ErrorResponse)
+		ctx.JSON(http.StatusInternalServerError, utils.ErrorResponse(err))
 		return
 	}
 
@@ -74,5 +74,16 @@ func (h *Handler) GetAccount(ctx *gin.Context) {
 }
 
 func (h *Handler) GetListAccounts(ctx *gin.Context) {
-	
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	arg := dto.ListAccountsDTO{
+		Owner: authPayload.Username,
+	}
+
+	accounts, err := h.service.GetListAccounts(ctx, arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, utils.ErrorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, accounts)
 }

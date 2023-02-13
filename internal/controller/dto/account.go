@@ -14,6 +14,10 @@ type GetAccountDTO struct {
 	ID int64 `json:"id"`
 }
 
+type ListAccountsDTO struct {
+	Owner string
+}
+
 type UpdateAccountDTO struct {
 	ID      int64 `json:"id"`
 	Balance int64 `json:"balance"`
